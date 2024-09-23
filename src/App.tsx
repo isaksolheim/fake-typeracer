@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 function App() {
   const [startTime, setStartTime] = useState(new Date().getTime());
@@ -29,22 +29,19 @@ function App() {
     });
   };
 
-  const getWpmText = () => {
-    const wpmScore =
-      score === 0
-        ? "0"
-        : (
-            (words / (new Date().getTime() / 1000 - startTime / 1000)) *
-            60
-          ).toFixed(0);
+  const wpmScore = useMemo(() => {
+    if (score === 0) return "0";
 
-    return `WPM: ${wpmScore}`;
-  };
+    const elapsedTimeInMinutes = (Date.now() - startTime) / 60000;
+    const wordsPerMinute = (words / elapsedTimeInMinutes).toFixed(0);
+
+    return wordsPerMinute;
+  }, [score, words, startTime]);
 
   return (
     <main className="pt-32 bg-black h-screen text-white">
       <div className="relative max-w-2xl m-auto text-xl text-white">
-        <p className="text-4xl text-white py-4">{getWpmText()}</p>
+        <p className="text-4xl text-white py-4">{wpmScore}</p>
         <input
           type="text"
           className="absolute opacity-0 top-0 left-0 w-full h-full z-0"
